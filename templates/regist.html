@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="utf8">
+</head>
+<body>
+	<p>Hello Python-マイページ-</p>
+	<p>{{ name }} さん</p>
+	<p>あなたのメモリストです</p>
+	<table>
+		<td>
+			<tr>
+				{{ memo.id }}
+			</tr>
+			<tr>
+				{{ memo.category }}
+			</tr>
+			<tr>
+				{{ memo.main }}
+			</tr>
+			<tr>
+				<a href="{{ link }}">{{ link }}</a>
+			</tr>
+		</td>
+	</table>
+</body>
+</html>
