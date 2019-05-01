@@ -14,6 +14,40 @@
 		<p><input type="text" name="link" placeholder="リンク"></p>
 		<p><input type="submit" value="submit"></p>
 	</form>
+	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+	<script
+  src="https://code.jquery.com/jquery-3.4.0.min.js"
+  integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
+  crossorigin="anonymous"></script>
+    <div id="app">
+            <button v-on:click="getAllList()">更新</button>
+	</div>
+	
+	<script>
+			var app = new Vue({
+				el:'#app',
+				data:{
+					list:[]
+				},
+				methods:{
+					getAllList:function(){
+						var _this = this
+						var result;
+						$.ajax({
+							type:'POST',
+							url:'/postText',
+							contentType:'application/json',
+							success:function() {
+							  console.log(result)
+							  _this.list = result
+							  return;
+							}
+						})
+					}
+				}
+			})
+			</script>
+
 	<table>
 		<td>
 			<tr>

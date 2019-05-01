@@ -44,7 +44,14 @@ def regist():
 		memos = session.query(MemoList).all()
 		session.add(memoList)
 		session.commit()
-		return render_template('mypage.html',name=session.name)
+		return render_template('mypage.html',name=session.name,memo=memos)
+
+@app.route('/postText', methods=['POST'])
+def getAllList():
+	return 'SEIKOU'
+
+	#result = session.query(MemoList).all()
+   	#return jsonify(result)
 
 
 def main():
