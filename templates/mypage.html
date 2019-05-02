@@ -32,16 +32,21 @@
 				methods:{
 					getAllList:function(){
 						var _this = this
-						var result;
+						var result = [];
 						$.ajax({
 							type:'POST',
 							url:'/postText',
 							dataType:"json",
 							contentType:'application/json',
 							success:function(response) {
+							for(var i=0;i<response.length;i++){
 								result.push({
-									check:response[i]
+									"category":response[i].category,
+									"main":response[i].main,
+									"link":response[i].link
 								})
+							}
+
 							  console.log(result)
 							  _this.list = result
 							  return;

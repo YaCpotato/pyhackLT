@@ -3,7 +3,7 @@
 import sys
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, DateTime
-from flask_sqlalchemy import SQLAlchemy
+
 from flask_marshmallow import Marshmallow
 from flask_marshmallow.fields import fields
 from setting import Base

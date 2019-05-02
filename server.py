@@ -2,9 +2,13 @@
 
 from setting import session
 from flask import Flask, render_template, request, redirect, url_for,jsonify
+from sqlalchemy.ext.declarative import DeclarativeMeta
+import sqlalchemy.orm
 from user import *
 from memoList import *
 import json
+from setting import Base
+from setting import ENGINE
 
 app = Flask(__name__)
 
@@ -51,14 +55,34 @@ def regist():
 def getAllList():
 	memoList = MemoList()
 	result = session.query(MemoList).all()
-	session.add(memoList)
-	session.commit()
-	result = jsonify(MemoListSchema().dump(result))
-	print('resultStart')
+	response = []
+	for results in result:
+		response.append(results.category)
+	
+	
+	result = json.dumps(result, cls=AlchemyEncoder)#jsonify(MemoListSchema(many=True).dump(response))
+	print('result')
 	print(result)
-	print('resultEnd')
    	return result
 
+
+class AlchemyEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj.__class__, DeclarativeMeta):
+            # an SQLAlchemy class
+            fields = {}
+            for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata']:
+                data = obj.__getattribute__(field)
+                try:
+                    json.dumps(data) # this will fail on non-encodable values, like other classes
+                    fields[field] = data
+                except TypeError:
+                    fields[field] = None
+            # a json-encodable dict
+            return fields
+
+        return json.JSONEncoder.default(self, obj)
 
 
 def main():
