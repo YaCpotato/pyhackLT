@@ -36,8 +36,12 @@
 						$.ajax({
 							type:'POST',
 							url:'/postText',
+							dataType:"json",
 							contentType:'application/json',
-							success:function() {
+							success:function(response) {
+								result.push({
+									check:response[i]
+								})
 							  console.log(result)
 							  _this.list = result
 							  return;

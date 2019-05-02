@@ -1,9 +1,10 @@
 # coding: UTF-8
 
 from setting import session
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for,jsonify
 from user import *
 from memoList import *
+import json
 
 app = Flask(__name__)
 
@@ -48,10 +49,16 @@ def regist():
 
 @app.route('/postText', methods=['POST'])
 def getAllList():
-	return 'SEIKOU'
+	memoList = MemoList()
+	result = session.query(MemoList).all()
+	session.add(memoList)
+	session.commit()
+	result = jsonify(MemoListSchema().dump(result))
+	print('resultStart')
+	print(result)
+	print('resultEnd')
+   	return result
 
-	#result = session.query(MemoList).all()
-   	#return jsonify(result)
 
 
 def main():
