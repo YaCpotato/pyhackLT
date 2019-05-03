@@ -19,20 +19,18 @@
   src="https://code.jquery.com/jquery-3.4.0.min.js"
   integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
   crossorigin="anonymous"></script>
-    <div id="app">
-            <button v-on:click="getAllList()">更新</button>
-	</div>
-	
+    <table>
+	</table>
 	<script>
-			var app = new Vue({
-				el:'#app',
+		var app;
+		$(document).ready(function(){
+			app = new Vue({
 				data:{
 					list:[]
 				},
-				methods:{
-					getAllList:function(){
-						var _this = this
+					created:function(){
 						var result = [];
+						var _this = this
 						$.ajax({
 							type:'POST',
 							url:'/postText',
@@ -41,37 +39,45 @@
 							success:function(response) {
 							for(var i=0;i<response.length;i++){
 								result.push({
+									"id":response[i].id,
 									"category":response[i].category,
 									"main":response[i].main,
 									"link":response[i].link
 								})
 							}
-
-							  console.log(result)
-							  _this.list = result
+							_this.createList(result)
 							  return;
 							}
 						})
+					},
+					methods:{
+						createList:function(list){
+							console.log('create list start')
+							console.log(list)
+							console.log(list.length)
+							for(var i=0;i<list.length;i++){
+								$('table').append('<tr></tr>');
+								$('tr').append('<td>'+list[i].id+'</td>');
+								$('tr').append('<td>'+list[i].category+'</td>');
+								$('tr').append('<td>'+list[i].main+'</td>');
+								$('tr').append('<td>'+list[i].link+'</td>');
+							}	
+						}
 					}
-				}
 			})
+		})
 			</script>
-
-	<table>
-		<td>
-			<tr>
-				{{ id }}
-			</tr>
-			<tr>
-				{{ category }}
-			</tr>
-			<tr>
-				{{ main }}
-			</tr>
-			<tr>
-				<a href="{{ link }}">{{ link }}</a>
-			</tr>
-		</td>
-	</table>
+<style>
+table{
+	background-color: aquamarine;
+}
+td{
+	background-color: blueviolet;
+}
+tr{
+	background-color: beige;
+}
+</style>
+	
 </body>
 </html>

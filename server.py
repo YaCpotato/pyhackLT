@@ -32,7 +32,8 @@ def mypage():
 				memos = session.query(MemoList).all()
 				session.add(memoList)  
 				session.commit()
-				return render_template('mypage.html',name=name, password=password)
+				list = getAllList()
+				return render_template('mypage.html',name=name, password=password,list=list)
 			else:
 				return redirect(url_for('index'))
 
@@ -58,7 +59,6 @@ def getAllList():
 	response = []
 	for results in result:
 		response.append(results.category)
-	
 	
 	result = json.dumps(result, cls=AlchemyEncoder)#jsonify(MemoListSchema(many=True).dump(response))
 	print('result')
