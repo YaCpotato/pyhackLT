@@ -12,7 +12,7 @@
 		<!--追加されたカテゴリを配列に格納し、リストレンダリングでチェックボックス作りたいところ-->
 		<p><input type="text" name="main" placeholder="メモ"></p>
 		<p><input type="text" name="link" placeholder="リンク"></p>
-		<p><input type="submit" value="submit"></p>
+		<p><input type="submit" name="submit" value="submit"></p>
 	</form>
 	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
 	<script
@@ -25,15 +25,12 @@
 		var app;
 		$(document).ready(function(){
 			app = new Vue({
-				data:{
-					list:[]
-				},
 					created:function(){
 						var result = [];
 						var _this = this
 						$.ajax({
 							type:'POST',
-							url:'/postText',
+							url:'/getMemo',
 							dataType:"json",
 							contentType:'application/json',
 							success:function(response) {
@@ -56,11 +53,11 @@
 							console.log(list)
 							console.log(list.length)
 							for(var i=0;i<list.length;i++){
-								$('table').append('<tr></tr>');
-								$('tr').append('<td>'+list[i].id+'</td>');
-								$('tr').append('<td>'+list[i].category+'</td>');
-								$('tr').append('<td>'+list[i].main+'</td>');
-								$('tr').append('<td>'+list[i].link+'</td>');
+								$('table').append('<tr></tr>')
+								$('table').append('<td id="list-id">'+list[i].id+'</td>');
+								$('table').append('<td id="list-cat">'+list[i].category+'</td>');
+								$('table').append('<td id="list-main">'+list[i].main+'</td>');
+								$('table').append('<td id="list-link">'+list[i].link+'</td>');
 							}	
 						}
 					}
@@ -69,13 +66,33 @@
 			</script>
 <style>
 table{
-	background-color: aquamarine;
+	background-color: white;
+	width:1000px;
 }
 td{
-	background-color: blueviolet;
+	background-color:lightcoral
 }
 tr{
 	background-color: beige;
+}
+#list-id{
+	background-color:khaki;
+	width:25px;
+}
+#list-cat{
+	height:auto;
+	width:100px;
+	background-color: lightgreen;
+}
+#list-main{
+	height:auto;
+	width:250px;
+	background-color:lightskyblue;
+}
+#list-link{
+	height:auto;
+	width:250px;
+	overflow-x: scroll;
 }
 </style>
 	

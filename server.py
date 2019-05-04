@@ -28,31 +28,32 @@ def mypage():
 		session.commit()
 		for user in users:
 			if(user.name == name and user.password == password):
-				memoList = MemoList()
-				memos = session.query(MemoList).all()
-				session.add(memoList)  
-				session.commit()
-				list = getAllList()
-				return render_template('mypage.html',name=name, password=password,list=list)
+				return render_template('mypage.html',name=name, password=password)
 			else:
-				return redirect(url_for('index'))
+				return redirect(url_for('/mypage'))
 
 @app.route('/regist',methods=['GET', 'POST'])
 def regist():
 	if request.method == 'POST':
-		category = request.form['category']
-		main = request.form['main']
-		link = request.form['link']
-		memoList = MemoList()
-		memoList.category = category
-		memoList.main = main
-		memoList.link = link
-		memos = session.query(MemoList).all()
-		session.add(memoList)
-		session.commit()
-		return render_template('mypage.html',name=session.name,memo=memos)
+		if(len(request.form['category'])!=0 or len(request.form['main'])!=0):
+			category = request.form['category']
+			main = request.form['main']
+			link = request.form['link']
+			memoList = MemoList()
+			memoList.category = category
+			memoList.main = main
+			memoList.link = link
+			memos = session.query(MemoList).all()
+			session.add(memoList)
+			session.commit()
+			return render_template('mypage.html',name=session.name,memo=memos)
+		else:
+			return redirect(url_for('index'))
+	
 
-@app.route('/postText', methods=['POST'])
+		
+
+@app.route('/getMemo', methods=['POST'])
 def getAllList():
 	memoList = MemoList()
 	result = session.query(MemoList).all()
