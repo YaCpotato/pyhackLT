@@ -1,9 +1,8 @@
 # coding: UTF-8
 
 from setting import session
-from flask import Flask, render_template, request, redirect, url_for,jsonify
+from flask import Flask, render_template, request, redirect, url_for
 from sqlalchemy.ext.declarative import DeclarativeMeta
-import sqlalchemy.orm
 from user import *
 from memoList import *
 import json
@@ -12,61 +11,98 @@ from setting import ENGINE
 
 app = Flask(__name__)
 
+#root
 @app.route('/')
 def index():
 	return render_template('index.html')
 
-@app.route('/mypage',methods=['GET', 'POST'])
+#mypageへのリクエスト（ログインリクエスト）
+@app.route('/mypage',methods=['POST'])
 def mypage():
+
+	#postリクエストが飛んできたら
     if request.method == 'POST':
-		session.name = request.form['name']
-		name=session.name
+
+		#request内のユーザー名、パスワードを変数に格納
+		name = request.form['name']
 		password = request.form['password']
+
+		#userテーブルのセッションを作成
 		user = User()
-		users = session.query(User).all()
+
+		#nameカラムがnameのレコードを持ってくる
+		users = session.query(User).\
+    	filter(User.name == name).\
+    	all()
+
+		#27行目でsessionのクエリを発行したので追加してコミットする
 		session.add(user)  
 		session.commit()
-		for user in users:
-			if(user.name == name and user.password == password):
-				return render_template('mypage.html',name=name, password=password)
-			else:
-				return redirect(url_for('/mypage'))
 
-@app.route('/regist',methods=['GET', 'POST'])
+		#持ってきたレコードを順に見ていく
+		for user in users:
+			if(user.password == password):
+
+				#passwordが合っているのが見つかったら、idとnameを
+				session.name = name
+
+				#mypageのHTMLをレンダリング
+				return render_template('mypage.html',name=session.name)
+			else:
+				#合ってなかったら、ログイン失敗、リダイレクト
+				return redirect(url_for('index'))
+
+#メモ登録リクエストがきたら
+@app.route('/regist',methods=['POST'])
 def regist():
 	if request.method == 'POST':
+
+		#カテゴリとメイン項目を空欄では受け付けない
 		if(len(request.form['category'])!=0 or len(request.form['main'])!=0):
+
+			#requestで飛んできたカテゴリ、メイン、リンクを変数に格納
 			category = request.form['category']
 			main = request.form['main']
 			link = request.form['link']
+
+			#memoListテーブルのセッションを作成
 			memoList = MemoList()
+
+			#格納した変数をそれぞれテーブルのレコードにセットする
 			memoList.category = category
 			memoList.main = main
 			memoList.link = link
-			memos = session.query(MemoList).all()
+
+			#sessionのクエリを発行したので追加してコミットする
 			session.add(memoList)
 			session.commit()
-			return render_template('mypage.html',name=session.name,memo=memos)
+
+			#mypageにレンダリング
+			return render_template('mypage.html',name=session.name)
 		else:
-			return redirect(url_for('index'))
+			#登録に失敗したらリダイレクト
+			return redirect(url_for('/mypage'))
 	
 
 		
-
+#メモリストのgetter
 @app.route('/getMemo', methods=['POST'])
 def getAllList():
+
+	#memoListセッションを作成
 	memoList = MemoList()
+
+	#memoListテーブルの全レコードを持ってくる
 	result = session.query(MemoList).all()
-	response = []
-	for results in result:
-		response.append(results.category)
 	
-	result = json.dumps(result, cls=AlchemyEncoder)#jsonify(MemoListSchema(many=True).dump(response))
-	print('result')
-	print(result)
+	#list型のresultをjsonにダンプ
+	result = json.dumps(result, cls=AlchemyEncoder)
+
+	#resultをリターンする-->Javascriptのajaxのresponseに入る
    	return result
 
 
+#list型をjsonにしてくれるスゴイやつ
 class AlchemyEncoder(json.JSONEncoder):
 
     def default(self, obj):
@@ -85,10 +121,11 @@ class AlchemyEncoder(json.JSONEncoder):
 
         return json.JSONEncoder.default(self, obj)
 
-
+#サーバーのデバッグモードの有無とipとポートの選択
 def main():
 	app.debug = True
 	app.run(host='127.0.0.1', port=8080)
 
+#おまじない
 if __name__ == '__main__':
 	main()
